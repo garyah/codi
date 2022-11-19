@@ -42,7 +42,8 @@ class Solution {
         testCases.add(new TestCase<int[], Integer>(new int[]{1,2,3,4}, -1));
         testCases.add(new TestCase<int[], Integer>(new int[]{1,3,1,2}, 0));
         testCases.add(new TestCase<int[], Integer>(new int[]{999,1000,998,999}, 0));
-        // testCases.add(new TestCase<int[], Integer>(new int[]{3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7}, 3));
+        testCases.add(new TestCase<int[], Integer>(new int[]{3,4,4,3,7}, 2));
+        testCases.add(new TestCase<int[], Integer>(new int[]{3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7,3,4,5,3,7}, -1));
 
         for (TestCase<int[], Integer> testCase : testCases) {
             Integer actual = solution.solution(testCase.input);
@@ -68,50 +69,38 @@ class Solution {
     }
 
     public int solution(int[] A) {
-        // initialize state
-        int N = A.length;
-
-        // check if trees are already aesthetically pleasing
-        boolean isPleasing = isPleasing(A, -1);
-
-        // if so, return true
-        if (isPleasing) return 0;
-
-        // iterate on all possible one tree removals, count how many are pleasing
-        int numPleasing = 0;
-        for (int i = 0; i < N; i++) {
-            if (isPleasing(A, i)) numPleasing++;
-        }
-
-        // return results
-        return (numPleasing > 0) ? numPleasing : -1;
+        return numWaysToFix(A);
     }
 
-    public boolean isPleasing(int[] A, int indexToSkip) {
+    public int numWaysToFix(int[] A) {
         // initialize state
         int N = A.length;
 
         // assume that initially, trees are aesthetically pleasing
         boolean isPleasing = true;
 
-        // -1 value here means the last height starts unknown
+        // number of ways to fix garden as follows:
+        // 3 = 3 ways to fix by removing one tree, (heights increased or decreased for just 3 trees)
+        // 2 = 2 ways to fix by removing one tree, (heights maintained for just 2 trees)
+        // 0 = 0 ways to fix by removing one tree, (garden is already pleasing)
+        // -1 = garden cannot be fixed
+        // assume that initially, garden does not need fixing
+        int numWaysToFix = 0;
+
+        // -1 value here means last height starts unknown
         int lastHeight = -1;
 
         // delta polarity defines delta heights:
         // -1 = height decreasing
         // 0 = height not changing
         // 1 = height increasing
-        // -2 value here means that the last delta polarity starts unknown
+        // -2 value here means that last delta polarity starts unknown
         int lastDeltaPolarity = -2;
 
         // loop through all the tree heights
 
         for (int i = 0; i < N; i++) {
             int height = A[i];
-            if (indexToSkip > -1 && i == indexToSkip) {
-                // must skip the tree that is removed, if any
-                continue;
-            }
 
             if (lastHeight == -1) {
                 // first tree, can remember its height and skip rest
@@ -123,7 +112,10 @@ class Solution {
 
             if (deltaPolarity == 0) {
                 // not pleasing case, heights are the same
+                // if already not pleasing, garden cannot be fixed
+                if (isPleasing == false) return -1;
                 isPleasing = false;
+                numWaysToFix = 2;
             }
             if (lastDeltaPolarity == -2) {
                 // second tree, can remember delta polarity and skip rest
@@ -132,7 +124,10 @@ class Solution {
             }
             if (lastDeltaPolarity == deltaPolarity) {
                 // not pleasing case, heights have been increasing or decreasing more than once
+                // if already not pleasing, garden cannot be fixed
+                if (isPleasing == false) return -1;
                 isPleasing = false;
+                numWaysToFix = 3;
             }
 
             // reset state for next tree
@@ -140,6 +135,6 @@ class Solution {
         }
 
         // return results
-        return isPleasing;
+        return numWaysToFix;
     }
 }
