@@ -72,6 +72,11 @@ class Solution {
         return numWaysToFix(A);
     }
 
+    // number of ways to fix garden as follows:
+    // 3 = 3 ways to fix by removing one tree, (heights increased or decreased for just 3 trees)
+    // 2 = 2 ways to fix by removing one tree, (heights maintained for just 2 trees)
+    // 0 = 0 ways to fix by removing one tree, (garden is already pleasing)
+    // -1 = garden cannot be fixed
     public int numWaysToFix(int[] A) {
         // initialize state
         int N = A.length;
@@ -79,11 +84,6 @@ class Solution {
         // assume that initially, trees are aesthetically pleasing
         boolean isPleasing = true;
 
-        // number of ways to fix garden as follows:
-        // 3 = 3 ways to fix by removing one tree, (heights increased or decreased for just 3 trees)
-        // 2 = 2 ways to fix by removing one tree, (heights maintained for just 2 trees)
-        // 0 = 0 ways to fix by removing one tree, (garden is already pleasing)
-        // -1 = garden cannot be fixed
         // assume that initially, garden does not need fixing
         int numWaysToFix = 0;
 
